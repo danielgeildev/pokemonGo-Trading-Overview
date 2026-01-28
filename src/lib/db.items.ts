@@ -1,11 +1,18 @@
 import { db, Partner } from "./db";
 
+export type NewPartner = {
+  displayName: string;
+  friendCode: string;
+  redditUrl: string;
+  inGameName: string;
+};
+
 export function addPartner({
   displayName,
   friendCode,
   redditUrl,
   inGameName,
-}: Partner) {
+}: NewPartner) {
   const now = new Date().toISOString();
 
   db.partners.add({
@@ -17,4 +24,9 @@ export function addPartner({
     redditUrl: redditUrl,
     inGameName: inGameName,
   });
+}
+
+export function deletePartner(id: string) {
+  console.log("detected delete with id", id);
+  db.partners.delete(id);
 }

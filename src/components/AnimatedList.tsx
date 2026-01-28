@@ -9,6 +9,7 @@ import React, {
   UIEvent,
 } from "react";
 import { motion, useInView } from "motion/react";
+import { Partner } from "@/lib/db";
 
 interface AnimatedItemProps {
   children: ReactNode;
@@ -44,8 +45,9 @@ const AnimatedItem: React.FC<AnimatedItemProps> = ({
 };
 
 interface AnimatedListProps {
-  items?: string[];
-  onItemSelect?: (item: string, index: number) => void;
+  items: Partner[];
+  onItemSelect?: (item: Partner, index: number) => void;
+  onDelete: (id: string) => {};
   showGradients?: boolean;
   enableArrowNavigation?: boolean;
   className?: string;
@@ -55,24 +57,9 @@ interface AnimatedListProps {
 }
 
 const AnimatedList: React.FC<AnimatedListProps> = ({
-  items = [
-    "Item 1",
-    "Item 2",
-    "Item 3",
-    "Item 4",
-    "Item 5",
-    "Item 6",
-    "Item 7",
-    "Item 8",
-    "Item 9",
-    "Item 10",
-    "Item 11",
-    "Item 12",
-    "Item 13",
-    "Item 14",
-    "Item 15",
-  ],
+  items,
   onItemSelect,
+  onDelete,
   showGradients = true,
   enableArrowNavigation = true,
   className = "",
@@ -92,7 +79,7 @@ const AnimatedList: React.FC<AnimatedListProps> = ({
   }, []);
 
   const handleItemClick = useCallback(
-    (item: string, index: number) => {
+    (item: Partner, index: number) => {
       setSelectedIndex(index);
       if (onItemSelect) {
         onItemSelect(item, index);
@@ -169,7 +156,7 @@ const AnimatedList: React.FC<AnimatedListProps> = ({
         ref={listRef}
         className={`max-h-[400px] overflow-y-auto p-4 ${
           displayScrollbar
-            ? "[&::-webkit-scrollbar]:w-[8px] [&::-webkit-scrollbar-track]:bg-[#060010] [&::-webkit-scrollbar-thumb]:bg-[#222] [&::-webkit-scrollbar-thumb]:rounded-[4px]"
+            ? "[&::-webkit-scrollbar]:w-[8px] [&::-webkit-scrollbar-track]:bg-[#060010] [&::-webkit-scrollbar-thumb]:bg-[#222] [&::-webkit-scrollbar-thumb]:rounded-lg"
             : "scrollbar-hide"
         }`}
         onScroll={handleScroll}
@@ -178,9 +165,10 @@ const AnimatedList: React.FC<AnimatedListProps> = ({
           scrollbarColor: "#222 #060010",
         }}
       >
+        {items.length === 0 && <p>Keine Items gefunden!</p>}
         {items.map((item, index) => (
           <AnimatedItem
-            key={index}
+            key={item.id}
             delay={0.1}
             index={index}
             onMouseEnter={() => handleItemMouseEnter(index)}
@@ -189,7 +177,14 @@ const AnimatedList: React.FC<AnimatedListProps> = ({
             <div
               className={`p-4 bg-[#111] rounded-lg ${selectedIndex === index ? "bg-[#222]" : ""} ${itemClassName}`}
             >
-              <p className="text-white m-0">{item}</p>
+              <p className="text-white m-0">{item.displayName}</p>
+              <button
+                onClick={() => {
+                  onDelete(item.id);
+                }}
+              >
+                delete
+              </button>
             </div>
           </AnimatedItem>
         ))}
