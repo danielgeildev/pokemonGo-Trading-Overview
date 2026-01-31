@@ -12,6 +12,8 @@ export type Partner = {
   friendCode?: string;
   createdAt: string; // ISO
   updatedAt: string; // ISO
+  pokemon: string
+  pokemonSprite: string
 };
 
 export type PartnerPokemon = {

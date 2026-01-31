@@ -1,10 +1,13 @@
 import { db, Partner } from "./db";
+import { getPokemon } from "./pokemon";
 
 export type NewPartner = {
   displayName: string;
   friendCode: string;
   redditUrl: string;
   inGameName: string;
+  pokemon: string
+  pokemonSprite: string,
 };
 
 export function addPartner({
@@ -12,6 +15,8 @@ export function addPartner({
   friendCode,
   redditUrl,
   inGameName,
+  pokemon,
+  pokemonSprite,
 }: NewPartner) {
   const now = new Date().toISOString();
 
@@ -23,6 +28,8 @@ export function addPartner({
     friendCode: friendCode,
     redditUrl: redditUrl,
     inGameName: inGameName,
+    pokemon: pokemon,
+    pokemonSprite: pokemonSprite,
   });
 } 
 
