@@ -29,7 +29,7 @@ import {
   InputGroupTextarea,
 } from "@/components/ui/input-group";
 import { Partner } from "@/lib/db";
-import { addPartner } from "@/lib/db.items";
+import { addPartner, NewPartner } from "@/lib/db.items";
 
 const formSchema = z.object({
   displayName: z.string().min(5, "Bug Name must be at least 5 characters."),
@@ -38,19 +38,33 @@ const formSchema = z.object({
   friendCode: z.string(),
 });
 
-export function Form() {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
+const DEFAULT_VALUES = {
       displayName: "",
       redditUrl: "",
       inGameName: "",
       friendCode: "",
-    },
+    }
+type FormProps = {
+  editData?: Partner | null,
+  onEdit?: (id: string, updatedData: NewPartner) => void
+}
+
+export function Form({editData, onEdit}: FormProps
+) {
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: DEFAULT_VALUES,
   });
+
+
+  React.useEffect(() => {
+    if (editData) 
+    form.reset(editData)
+  }, [editData])
 
   function onSubmit(data: z.infer<typeof formSchema>) {
     addPartner(data);
+    form.reset(DEFAULT_VALUES)
   }
 
   return (
@@ -147,12 +161,13 @@ export function Form() {
       </CardContent>
       <CardFooter>
         <Field orientation="horizontal">
-          <Button type="button" variant="outline" onClick={() => form.reset()}>
+          <Button type="button" variant="outline" onClick={() => form.reset(DEFAULT_VALUES)}>
             Reset
           </Button>
-          <Button type="submit" form="form-rhf-demo">
+          {editData ? <Button onClick={() => onEdit ? onEdit(editData.id, form.getValues()) : {}} >edit</Button> : <Button type="submit" form="form-rhf-demo">
             Submit
-          </Button>
+          </Button>}
+          
         </Field>
       </CardFooter>
     </Card>

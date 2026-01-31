@@ -47,7 +47,7 @@ const AnimatedItem: React.FC<AnimatedItemProps> = ({
 interface AnimatedListProps {
   items: Partner[];
   onItemSelect?: (item: Partner, index: number) => void;
-  onDelete: (id: string) => {};
+  onDelete: (id: string) => void;
   showGradients?: boolean;
   enableArrowNavigation?: boolean;
   className?: string;

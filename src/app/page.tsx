@@ -4,11 +4,12 @@ import ShinyText from "@/components/ShinyText";
 import Shuffle from "@/components/Shuffle";
 import { Form } from "@/components/ui/form";
 import { usePartners } from "@/hooks/usePartners";
-import { db } from "@/lib/db";
-import { deletePartner } from "@/lib/db.items";
-import Image from "next/image";
+import { db, Partner } from "@/lib/db";
+import { deletePartner, NewPartner, updatePartner } from "@/lib/db.items";
+import { useState } from "react";
 
 export default function Home() {
+  const [editData, setEditData] = useState<Partner | null>(null)
   const { partners } = usePartners();
 
   const items = partners;
@@ -23,13 +24,15 @@ export default function Home() {
         </div>
         <AnimatedList
           items={items}
-          onDelete={() => deletePartner}
-          onItemSelect={(item) => deletePartner(item.id)}
+          onDelete={(id) => deletePartner(id)}
+          onItemSelect={(item) => setEditData(item)}
           showGradients
           enableArrowNavigation
           displayScrollbar
         />
-        <Form></Form>
+        <Form onEdit={(id, updatedData) => {
+          console.log(id, updatePartner)
+          updatePartner(id, updatedData)}} editData={editData}></Form>
       </main>
     </div>
   );

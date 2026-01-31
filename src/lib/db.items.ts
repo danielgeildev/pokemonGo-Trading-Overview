@@ -24,9 +24,13 @@ export function addPartner({
     redditUrl: redditUrl,
     inGameName: inGameName,
   });
-}
+} 
 
 export function deletePartner(id: string) {
-  console.log("detected delete with id", id);
   db.partners.delete(id);
+}
+
+export function updatePartner(id: string, updatedData: NewPartner) {
+  console.log("updating item", updatedData)
+  db.partners.update(id, updatedData)
 }
