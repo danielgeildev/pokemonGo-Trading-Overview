@@ -339,11 +339,10 @@ export default function HomePage() {
               className="w-9 h-9 rounded-xl overflow-hidden flex-shrink-0"
               style={{ background: "#1a1d27" }}
             >
-              <Image
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
                 src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/132.png"
                 alt="Ditto"
-                width={36}
-                height={36}
                 style={{ width: "100%", height: "100%", objectFit: "contain" }}
               />
             </div>
