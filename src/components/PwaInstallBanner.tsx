@@ -9,6 +9,16 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 }
 
+// Store the event globally so it's not lost if it fires before React mounts
+let globalPrompt: BeforeInstallPromptEvent | null = null;
+
+if (typeof window !== "undefined") {
+  window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();
+    globalPrompt = e as BeforeInstallPromptEvent;
+  });
+}
+
 function isIos() {
   if (typeof navigator === "undefined") return false;
   return /iphone|ipad|ipod/i.test(navigator.userAgent);
@@ -36,19 +46,22 @@ export default function PwaInstallBanner() {
     // Don't show if already installed (running as standalone)
     if (isInStandaloneMode()) return;
 
-    const iosDevice = isIos();
-    setIos(iosDevice);
+    setIos(isIos());
+
+    // Pick up prompt that may have fired before React mounted
+    if (globalPrompt) {
+      setPrompt(globalPrompt);
+    }
 
     const handler = (e: Event) => {
       e.preventDefault();
+      globalPrompt = e as BeforeInstallPromptEvent;
       setPrompt(e as BeforeInstallPromptEvent);
-      setVisible(true);
     };
 
     window.addEventListener("beforeinstallprompt", handler);
 
-    // Fallback: show banner after short delay even without beforeinstallprompt
-    // (covers Firefox, Safari, iOS, etc.)
+    // Fallback: always show banner after short delay (Firefox, Safari, iOS)
     const fallbackTimer = setTimeout(() => {
       setVisible(true);
     }, 1500);
@@ -59,17 +72,24 @@ export default function PwaInstallBanner() {
     };
   }, []);
 
+  // Also show banner immediately if prompt is available
+  useEffect(() => {
+    if (prompt) setVisible(true);
+  }, [prompt]);
+
   function handleInstall() {
     if (prompt) {
       prompt.prompt();
       prompt.userChoice.then(() => {
         setVisible(false);
         setPrompt(null);
+        globalPrompt = null;
       });
     }
   }
 
-  function handleDismiss() {
+  function handleDismiss(e: React.MouseEvent) {
+    e.stopPropagation();
     localStorage.setItem(DISMISSED_KEY, "1");
     setVisible(false);
   }
@@ -78,12 +98,14 @@ export default function PwaInstallBanner() {
 
   return (
     <div
+      onClick={handleInstall}
       className="fixed bottom-0 left-0 right-0 z-50 p-4 flex items-center gap-3"
       style={{
         background: "var(--bg-surface)",
         borderTop: "1px solid var(--border)",
         backdropFilter: "blur(16px)",
         boxShadow: "0 -8px 32px rgba(0,0,0,0.4)",
+        cursor: prompt ? "pointer" : "default",
       }}
     >
       {/* Icon */}
@@ -118,7 +140,6 @@ export default function PwaInstallBanner() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
-        {/* Only show Install button when native prompt is available */}
         {prompt && (
           <button
             onClick={handleInstall}
