@@ -339,7 +339,12 @@ export default function HomePage() {
             <img
               src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/132.svg"
               alt="Ditto"
-              style={{ width: 40, height: 40, objectFit: "contain", flexShrink: 0 }}
+              style={{
+                width: 40,
+                height: 40,
+                objectFit: "contain",
+                flexShrink: 0,
+              }}
             />
             <div>
               <h1

@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 
-
 const DISMISSED_KEY = "pwa-install-dismissed";
 
 interface BeforeInstallPromptEvent extends Event {
@@ -10,9 +9,20 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 }
 
+function isIos() {
+  if (typeof navigator === "undefined") return false;
+  return /iphone|ipad|ipod/i.test(navigator.userAgent);
+}
+
+function isInStandaloneMode() {
+  if (typeof window === "undefined") return false;
+  return window.matchMedia("(display-mode: standalone)").matches;
+}
+
 export default function PwaInstallBanner() {
   const [prompt, setPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [visible, setVisible] = useState(false);
+  const [ios, setIos] = useState(false);
 
   useEffect(() => {
     // Register service worker
@@ -24,24 +34,39 @@ export default function PwaInstallBanner() {
     if (localStorage.getItem(DISMISSED_KEY)) return;
 
     // Don't show if already installed (running as standalone)
-    if (window.matchMedia("(display-mode: standalone)").matches) return;
+    if (isInStandaloneMode()) return;
+
+    const iosDevice = isIos();
+    setIos(iosDevice);
 
     const handler = (e: Event) => {
       e.preventDefault();
       setPrompt(e as BeforeInstallPromptEvent);
       setVisible(true);
     };
+
     window.addEventListener("beforeinstallprompt", handler);
-    return () => window.removeEventListener("beforeinstallprompt", handler);
+
+    // Fallback: show banner after short delay even without beforeinstallprompt
+    // (covers Firefox, Safari, iOS, etc.)
+    const fallbackTimer = setTimeout(() => {
+      setVisible(true);
+    }, 1500);
+
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handler);
+      clearTimeout(fallbackTimer);
+    };
   }, []);
 
   function handleInstall() {
-    if (!prompt) return;
-    prompt.prompt();
-    prompt.userChoice.then(() => {
-      setVisible(false);
-      setPrompt(null);
-    });
+    if (prompt) {
+      prompt.prompt();
+      prompt.userChoice.then(() => {
+        setVisible(false);
+        setPrompt(null);
+      });
+    }
   }
 
   function handleDismiss() {
@@ -70,9 +95,15 @@ export default function PwaInstallBanner() {
         <p className="text-sm font-bold leading-tight" style={{ color: "var(--text-primary)" }}>
           App installieren
         </p>
-        <p className="text-xs mt-0.5" style={{ color: "var(--text-muted)" }}>
-          Zum Homescreen hinzufügen für schnellen Zugriff
-        </p>
+        {ios ? (
+          <p className="text-xs mt-0.5" style={{ color: "var(--text-muted)" }}>
+            Tippe auf das Teilen-Symbol und dann &bdquo;Zum Home-Bildschirm&ldquo;
+          </p>
+        ) : (
+          <p className="text-xs mt-0.5" style={{ color: "var(--text-muted)" }}>
+            Zum Homescreen hinzufügen für schnellen Zugriff
+          </p>
+        )}
       </div>
 
       {/* Buttons */}
@@ -87,13 +118,16 @@ export default function PwaInstallBanner() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
-        <button
-          onClick={handleInstall}
-          className="px-3 py-1.5 rounded-xl text-sm font-bold transition-all"
-          style={{ background: "var(--accent)", color: "#fff", boxShadow: "0 2px 8px var(--accent-glow)" }}
-        >
-          Installieren
-        </button>
+        {/* Only show Install button when native prompt is available */}
+        {prompt && (
+          <button
+            onClick={handleInstall}
+            className="px-3 py-1.5 rounded-xl text-sm font-bold transition-all"
+            style={{ background: "var(--accent)", color: "#fff", boxShadow: "0 2px 8px var(--accent-glow)" }}
+          >
+            Installieren
+          </button>
+        )}
       </div>
     </div>
   );
