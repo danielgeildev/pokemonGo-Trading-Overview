@@ -339,14 +339,19 @@ export default function HomePage() {
             <img
               src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/132.svg"
               alt="Ditto"
-              style={{ width: 40, height: 40, objectFit: "contain", flexShrink: 0 }}
+              style={{
+                width: 40,
+                height: 40,
+                objectFit: "contain",
+                flexShrink: 0,
+              }}
             />
             <div>
               <h1
                 className="font-bold text-base leading-tight"
                 style={{ color: "var(--text-primary)" }}
               >
-                Trade Trackerasdn
+                Trade Tracker
               </h1>
               <p className="text-xs" style={{ color: "var(--text-muted)" }}>
                 Pokémon GO
