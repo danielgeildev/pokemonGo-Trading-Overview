@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 
 const DISMISSED_KEY = "pwa-install-dismissed";
 
@@ -62,10 +63,10 @@ export default function PwaInstallBanner() {
     >
       {/* Icon */}
       <div
-        className="w-11 h-11 rounded-xl flex items-center justify-center font-black text-base flex-shrink-0"
-        style={{ background: "var(--accent)", color: "#fff" }}
+        className="w-11 h-11 rounded-xl overflow-hidden flex-shrink-0"
+        style={{ background: "#1a1d27" }}
       >
-        TT
+        <Image src="/icons/ditto.png" alt="Ditto" width={44} height={44} className="object-contain w-full h-full" />
       </div>
 
       {/* Text */}

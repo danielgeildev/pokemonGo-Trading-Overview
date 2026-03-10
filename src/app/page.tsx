@@ -314,14 +314,10 @@ export default function HomePage() {
           <div className="flex items-center gap-3">
             {/* Logo mark */}
             <div
-              className="w-9 h-9 rounded-xl flex items-center justify-center font-black text-base"
-              style={{
-                background: "var(--accent)",
-                color: "#fff",
-                letterSpacing: "-0.02em",
-              }}
+              className="w-9 h-9 rounded-xl overflow-hidden flex-shrink-0"
+              style={{ background: "#1a1d27" }}
             >
-              TT
+              <Image src="/icons/ditto.png" alt="Ditto" width={36} height={36} className="object-contain w-full h-full" />
             </div>
             <div>
               <h1
