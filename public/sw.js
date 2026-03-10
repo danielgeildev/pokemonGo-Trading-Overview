@@ -1,4 +1,4 @@
-const CACHE = "trade-tracker-v2";
+const CACHE = "trade-tracker-2026-03-10T09:17:21.834Z";
 const PRECACHE = ["/", "/manifest.json"];
 
 self.addEventListener("install", (e) => {
