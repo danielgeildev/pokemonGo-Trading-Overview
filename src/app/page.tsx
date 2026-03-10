@@ -335,23 +335,18 @@ export default function HomePage() {
         <div className="max-w-2xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
             {/* Logo mark */}
-            <div
-              className="w-9 h-9 rounded-xl overflow-hidden flex-shrink-0"
-              style={{ background: "#1a1d27" }}
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/132.png"
-                alt="Ditto"
-                style={{ width: "100%", height: "100%", objectFit: "contain" }}
-              />
-            </div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/132.svg"
+              alt="Ditto"
+              style={{ width: 40, height: 40, objectFit: "contain", flexShrink: 0 }}
+            />
             <div>
               <h1
                 className="font-bold text-base leading-tight"
                 style={{ color: "var(--text-primary)" }}
               >
-                Trade Tracker
+                Trade Trackerasdn
               </h1>
               <p className="text-xs" style={{ color: "var(--text-muted)" }}>
                 Pokémon GO
