@@ -53,8 +53,18 @@ body {
   border-radius: 3px;
 }
 
-/* Date input color fix for dark mode */
+/* Date input dark mode */
+input[type="date"] {
+  color-scheme: dark;
+}
 input[type="date"]::-webkit-calendar-picker-indicator {
-  filter: invert(0.6);
+  background-color: transparent;
+  color: var(--text-muted);
+  filter: invert(0.5) sepia(0.2) saturate(2) hue-rotate(200deg);
   cursor: pointer;
+  border-radius: 4px;
+  padding: 2px;
+}
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  filter: invert(0.7) sepia(0.3) saturate(3) hue-rotate(200deg);
 }

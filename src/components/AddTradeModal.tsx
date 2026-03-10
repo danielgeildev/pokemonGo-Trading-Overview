@@ -19,7 +19,8 @@ const inputStyle = {
 };
 
 export default function AddTradeModal({ onClose, onAdd }: Props) {
-  const [traderName, setTraderName] = useState("");
+  const [ingameName, setIngameName] = useState("");
+  const [redditName, setRedditName] = useState("");
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
   const [notes, setNotes] = useState("");
   const [theirPokemon, setTheirPokemon] = useState<PokemonInfo | null>(null);
@@ -29,8 +30,8 @@ export default function AddTradeModal({ onClose, onAdd }: Props) {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!traderName.trim()) {
-      setError("Bitte gib den Namen des Trainers an.");
+    if (!ingameName.trim()) {
+      setError("Bitte gib den Ingame-Namen an.");
       return;
     }
     if (!theirPokemon) {
@@ -43,7 +44,8 @@ export default function AddTradeModal({ onClose, onAdd }: Props) {
     }
     const trade: Trade = {
       id: crypto.randomUUID(),
-      traderName: traderName.trim(),
+      ingameName: ingameName.trim(),
+      redditName: redditName.trim() || undefined,
       date: new Date(date).toISOString(),
       notes: notes.trim() || undefined,
       theirPokemon,
@@ -100,33 +102,56 @@ export default function AddTradeModal({ onClose, onAdd }: Props) {
             </div>
           )}
 
-          {/* Trainer Name + Date row */}
+          {/* Ingame Name + Reddit Name */}
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: "var(--text-muted)" }}>
-                Trainer-Name
+                Ingame Name
               </label>
               <input
                 type="text"
-                value={traderName}
-                onChange={(e) => setTraderName(e.target.value)}
-                placeholder="Ash Ketchum"
+                value={ingameName}
+                onChange={(e) => setIngameName(e.target.value)}
+                placeholder="AshKetchum99"
                 className={inputClass}
                 style={inputStyle}
               />
             </div>
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: "var(--text-muted)" }}>
-                Datum
+                Reddit Name <span style={{ fontWeight: 400, textTransform: "none" }}>(optional)</span>
               </label>
-              <input
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                className={inputClass}
-                style={inputStyle}
-              />
+              <div className="relative">
+                <span
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-semibold select-none"
+                  style={{ color: "var(--text-muted)" }}
+                >
+                  u/
+                </span>
+                <input
+                  type="text"
+                  value={redditName}
+                  onChange={(e) => setRedditName(e.target.value)}
+                  placeholder="username"
+                  className={inputClass}
+                  style={{ ...inputStyle, paddingLeft: "2rem" }}
+                />
+              </div>
             </div>
+          </div>
+
+          {/* Date */}
+          <div>
+            <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: "var(--text-muted)" }}>
+              Datum
+            </label>
+            <input
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              className={inputClass}
+              style={inputStyle}
+            />
           </div>
 
           {/* Status */}

@@ -1,19 +1,36 @@
+export type PokemonVariant = "normal" | "shiny" | "female" | "shiny-female";
+
+export type PokemonTag = "lucky" | "shadow" | "purified" | "costume";
+
+export interface PokemonForm {
+  name: string; // e.g. "venusaur-mega"
+  displayName: string; // e.g. "Venusaur Mega"
+  spriteUrl: string;
+  shinyUrl: string;
+}
+
 export interface PokemonInfo {
   id: number;
   name: string;
-  displayName: string; // Capitalized name
+  displayName: string;
   spriteUrl: string;
   types: string[];
+  variant: PokemonVariant;
+  hasFemaleDiff: boolean;
+  tags: PokemonTag[];
+  /** If this is an alternate form, the base species name */
+  baseName?: string;
+  /** Available related forms (Mega, Gmax, Alolan, Galarian, etc.) */
+  forms?: PokemonForm[];
 }
 
 export interface Trade {
   id: string;
-  traderName: string;
-  date: string; // ISO string
+  ingameName: string;
+  redditName?: string;
+  date: string;
   notes?: string;
-  // What the trader offers (what I receive)
   theirPokemon: PokemonInfo;
-  // What I offer (what I give)
   myPokemon: PokemonInfo;
   status: "planned" | "completed" | "cancelled";
 }

@@ -5,7 +5,47 @@ import Image from "next/image";
 import Link from "next/link";
 import { useTrades } from "@/hooks/useTrades";
 import AddTradeModal from "@/components/AddTradeModal";
-import { Trade } from "@/types/trade";
+import { Trade, PokemonVariant, PokemonTag } from "@/types/trade";
+
+const VARIANT_CONFIG: Record<
+  PokemonVariant,
+  { label: string; color: string; bg: string }
+> = {
+  normal: {
+    label: "Normal",
+    color: "var(--text-secondary)",
+    bg: "var(--bg-elevated)",
+  },
+  shiny: { label: "✨ Shiny", color: "#fbbf24", bg: "rgba(251,191,36,0.15)" },
+  female: { label: "♀ Female", color: "#e879f9", bg: "rgba(232,121,249,0.15)" },
+  "shiny-female": {
+    label: "✨♀ Shiny F.",
+    color: "#f0abfc",
+    bg: "rgba(240,171,252,0.15)",
+  },
+};
+
+const TAG_CONFIG: Record<
+  PokemonTag,
+  { label: string; color: string; bg: string }
+> = {
+  lucky: { label: "⭐ Lucky", color: "#fcd34d", bg: "rgba(252,211,77,0.15)" },
+  shadow: {
+    label: "🌑 Shadow",
+    color: "#a78bfa",
+    bg: "rgba(167,139,250,0.15)",
+  },
+  purified: {
+    label: "✦ Purified",
+    color: "#67e8f9",
+    bg: "rgba(103,232,249,0.15)",
+  },
+  costume: {
+    label: "🎭 Costume",
+    color: "#f9a8d4",
+    bg: "rgba(249,168,212,0.15)",
+  },
+};
 
 const STATUS_CONFIG = {
   planned: {
@@ -49,12 +89,16 @@ function TradeCard({ trade }: { trade: Trade }) {
           boxShadow: "0 2px 12px rgba(0,0,0,0.3)",
         }}
         onMouseEnter={(e) => {
-          (e.currentTarget as HTMLDivElement).style.borderColor = "var(--accent)";
-          (e.currentTarget as HTMLDivElement).style.boxShadow = `0 4px 24px rgba(0,0,0,0.4), 0 0 0 1px var(--accent)`;
+          (e.currentTarget as HTMLDivElement).style.borderColor =
+            "var(--accent)";
+          (e.currentTarget as HTMLDivElement).style.boxShadow =
+            `0 4px 24px rgba(0,0,0,0.4), 0 0 0 1px var(--accent)`;
         }}
         onMouseLeave={(e) => {
-          (e.currentTarget as HTMLDivElement).style.borderColor = "var(--border)";
-          (e.currentTarget as HTMLDivElement).style.boxShadow = "0 2px 12px rgba(0,0,0,0.3)";
+          (e.currentTarget as HTMLDivElement).style.borderColor =
+            "var(--border)";
+          (e.currentTarget as HTMLDivElement).style.boxShadow =
+            "0 2px 12px rgba(0,0,0,0.3)";
         }}
       >
         {/* Card Header */}
@@ -64,14 +108,32 @@ function TradeCard({ trade }: { trade: Trade }) {
         >
           <div className="flex items-center gap-2.5">
             <div
-              className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold"
-              style={{ background: "var(--accent-glow)", color: "var(--accent)" }}
+              className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
+              style={{
+                background: "var(--accent-glow)",
+                color: "var(--accent)",
+              }}
             >
-              {trade.traderName.charAt(0).toUpperCase()}
+              {trade.ingameName
+                ? trade.ingameName.charAt(0).toUpperCase()
+                : null}
             </div>
-            <span className="font-semibold text-sm" style={{ color: "var(--text-primary)" }}>
-              {trade.traderName}
-            </span>
+            <div className="flex flex-col min-w-0">
+              <span
+                className="font-semibold text-sm leading-tight truncate"
+                style={{ color: "var(--text-primary)" }}
+              >
+                {trade.ingameName}
+              </span>
+              {trade.redditName && (
+                <span
+                  className="text-xs leading-tight truncate"
+                  style={{ color: "var(--text-muted)" }}
+                >
+                  u/{trade.redditName}
+                </span>
+              )}
+            </div>
           </div>
           <span className="text-xs" style={{ color: "var(--text-muted)" }}>
             {formatDate(trade.date)}
@@ -83,7 +145,10 @@ function TradeCard({ trade }: { trade: Trade }) {
           <div className="flex items-center justify-between gap-3">
             {/* Their Pokemon */}
             <div className="flex-1 flex flex-col items-center gap-1.5">
-              <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: "var(--text-muted)" }}>
+              <p
+                className="text-xs font-semibold uppercase tracking-widest"
+                style={{ color: "var(--text-muted)" }}
+              >
                 Erhalte
               </p>
               <div className="w-[72px] h-[72px] relative">
@@ -104,24 +169,68 @@ function TradeCard({ trade }: { trade: Trade }) {
                   </div>
                 )}
               </div>
-              <p className="text-sm font-bold text-center leading-tight" style={{ color: "var(--text-primary)" }}>
+              <p
+                className="text-sm font-bold text-center leading-tight"
+                style={{ color: "var(--text-primary)" }}
+              >
                 {trade.theirPokemon.displayName}
               </p>
+              {trade.theirPokemon.variant &&
+                trade.theirPokemon.variant !== "normal" && (
+                  <span
+                    className="text-xs px-2 py-0.5 rounded-full font-semibold"
+                    style={{
+                      background: VARIANT_CONFIG[trade.theirPokemon.variant].bg,
+                      color: VARIANT_CONFIG[trade.theirPokemon.variant].color,
+                    }}
+                  >
+                    {VARIANT_CONFIG[trade.theirPokemon.variant].label}
+                  </span>
+                )}
+              {(trade.theirPokemon.tags ?? []).map((tag) => (
+                <span
+                  key={tag}
+                  className="text-xs px-2 py-0.5 rounded-full font-semibold"
+                  style={{
+                    background: TAG_CONFIG[tag].bg,
+                    color: TAG_CONFIG[tag].color,
+                  }}
+                >
+                  {TAG_CONFIG[tag].label}
+                </span>
+              ))}
             </div>
 
             {/* Arrow */}
             <div
               className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
-              style={{ background: "var(--bg-elevated)", border: "1px solid var(--border)", color: "var(--text-muted)" }}
+              style={{
+                background: "var(--bg-elevated)",
+                border: "1px solid var(--border)",
+                color: "var(--text-muted)",
+              }}
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"
+                />
               </svg>
             </div>
 
             {/* My Pokemon */}
             <div className="flex-1 flex flex-col items-center gap-1.5">
-              <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: "var(--text-muted)" }}>
+              <p
+                className="text-xs font-semibold uppercase tracking-widest"
+                style={{ color: "var(--text-muted)" }}
+              >
                 Gebe
               </p>
               <div className="w-[72px] h-[72px] relative">
@@ -142,9 +251,36 @@ function TradeCard({ trade }: { trade: Trade }) {
                   </div>
                 )}
               </div>
-              <p className="text-sm font-bold text-center leading-tight" style={{ color: "var(--text-primary)" }}>
+              <p
+                className="text-sm font-bold text-center leading-tight"
+                style={{ color: "var(--text-primary)" }}
+              >
                 {trade.myPokemon.displayName}
               </p>
+              {trade.myPokemon.variant &&
+                trade.myPokemon.variant !== "normal" && (
+                  <span
+                    className="text-xs px-2 py-0.5 rounded-full font-semibold"
+                    style={{
+                      background: VARIANT_CONFIG[trade.myPokemon.variant].bg,
+                      color: VARIANT_CONFIG[trade.myPokemon.variant].color,
+                    }}
+                  >
+                    {VARIANT_CONFIG[trade.myPokemon.variant].label}
+                  </span>
+                )}
+              {(trade.myPokemon.tags ?? []).map((tag) => (
+                <span
+                  key={tag}
+                  className="text-xs px-2 py-0.5 rounded-full font-semibold"
+                  style={{
+                    background: TAG_CONFIG[tag].bg,
+                    color: TAG_CONFIG[tag].color,
+                  }}
+                >
+                  {TAG_CONFIG[tag].label}
+                </span>
+              ))}
             </div>
           </div>
 
@@ -157,7 +293,10 @@ function TradeCard({ trade }: { trade: Trade }) {
               className="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full"
               style={{ background: status.bg, color: status.color }}
             >
-              <span className="w-1.5 h-1.5 rounded-full" style={{ background: status.dot }} />
+              <span
+                className="w-1.5 h-1.5 rounded-full"
+                style={{ background: status.dot }}
+              />
               {status.label}
             </span>
             {trade.notes && (
@@ -179,10 +318,14 @@ function TradeCard({ trade }: { trade: Trade }) {
 export default function HomePage() {
   const { trades, addTrade, loaded } = useTrades();
   const [showModal, setShowModal] = useState(false);
-  const [filterStatus, setFilterStatus] = useState<Trade["status"] | "all">("all");
+  const [filterStatus, setFilterStatus] = useState<Trade["status"] | "all">(
+    "all",
+  );
 
   const filtered =
-    filterStatus === "all" ? trades : trades.filter((t) => t.status === filterStatus);
+    filterStatus === "all"
+      ? trades
+      : trades.filter((t) => t.status === filterStatus);
 
   return (
     <div className="min-h-screen" style={{ background: "var(--bg-base)" }}>
@@ -200,12 +343,19 @@ export default function HomePage() {
             {/* Logo mark */}
             <div
               className="w-9 h-9 rounded-xl flex items-center justify-center font-black text-base"
-              style={{ background: "var(--accent)", color: "#fff", letterSpacing: "-0.02em" }}
+              style={{
+                background: "var(--accent)",
+                color: "#fff",
+                letterSpacing: "-0.02em",
+              }}
             >
               TT
             </div>
             <div>
-              <h1 className="font-bold text-base leading-tight" style={{ color: "var(--text-primary)" }}>
+              <h1
+                className="font-bold text-base leading-tight"
+                style={{ color: "var(--text-primary)" }}
+              >
                 Trade Tracker
               </h1>
               <p className="text-xs" style={{ color: "var(--text-muted)" }}>
@@ -222,11 +372,27 @@ export default function HomePage() {
               color: "#fff",
               boxShadow: "0 2px 12px var(--accent-glow)",
             }}
-            onMouseEnter={(e) => ((e.currentTarget as HTMLButtonElement).style.background = "var(--accent-hover)")}
-            onMouseLeave={(e) => ((e.currentTarget as HTMLButtonElement).style.background = "var(--accent)")}
+            onMouseEnter={(e) =>
+              ((e.currentTarget as HTMLButtonElement).style.background =
+                "var(--accent-hover)")
+            }
+            onMouseLeave={(e) =>
+              ((e.currentTarget as HTMLButtonElement).style.background =
+                "var(--accent)")
+            }
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2.5}
+                d="M12 4v16m8-8H4"
+              />
             </svg>
             Neuer Trade
           </button>
@@ -237,30 +403,42 @@ export default function HomePage() {
         {/* Stats */}
         {loaded && trades.length > 0 && (
           <div className="grid grid-cols-3 gap-3 mb-6">
-            {(["planned", "completed", "cancelled"] as Trade["status"][]).map((s) => {
-              const count = trades.filter((t) => t.status === s).length;
-              const cfg = STATUS_CONFIG[s];
-              const active = filterStatus === s;
-              return (
-                <button
-                  key={s}
-                  onClick={() => setFilterStatus(active ? "all" : s)}
-                  className="rounded-xl p-3.5 text-center transition-all duration-150"
-                  style={{
-                    background: active ? cfg.bg : "var(--bg-surface)",
-                    border: `1px solid ${active ? cfg.color + "55" : "var(--border)"}`,
-                    outline: "none",
-                  }}
-                >
-                  <p className="text-2xl font-bold" style={{ color: active ? cfg.color : "var(--text-primary)" }}>
-                    {count}
-                  </p>
-                  <p className="text-xs font-medium mt-0.5" style={{ color: active ? cfg.color : "var(--text-secondary)" }}>
-                    {cfg.label}
-                  </p>
-                </button>
-              );
-            })}
+            {(["planned", "completed", "cancelled"] as Trade["status"][]).map(
+              (s) => {
+                const count = trades.filter((t) => t.status === s).length;
+                const cfg = STATUS_CONFIG[s];
+                const active = filterStatus === s;
+                return (
+                  <button
+                    key={s}
+                    onClick={() => setFilterStatus(active ? "all" : s)}
+                    className="rounded-xl p-3.5 text-center transition-all duration-150"
+                    style={{
+                      background: active ? cfg.bg : "var(--bg-surface)",
+                      border: `1px solid ${active ? cfg.color + "55" : "var(--border)"}`,
+                      outline: "none",
+                    }}
+                  >
+                    <p
+                      className="text-2xl font-bold"
+                      style={{
+                        color: active ? cfg.color : "var(--text-primary)",
+                      }}
+                    >
+                      {count}
+                    </p>
+                    <p
+                      className="text-xs font-medium mt-0.5"
+                      style={{
+                        color: active ? cfg.color : "var(--text-secondary)",
+                      }}
+                    >
+                      {cfg.label}
+                    </p>
+                  </button>
+                );
+              },
+            )}
           </div>
         )}
 
@@ -269,21 +447,33 @@ export default function HomePage() {
           <div className="flex justify-center py-24">
             <div
               className="w-10 h-10 rounded-full border-2 border-t-transparent animate-spin"
-              style={{ borderColor: "var(--border)", borderTopColor: "var(--accent)" }}
+              style={{
+                borderColor: "var(--border)",
+                borderTopColor: "var(--accent)",
+              }}
             />
           </div>
         ) : filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-24 text-center">
             <div
               className="w-20 h-20 rounded-2xl flex items-center justify-center mb-5 text-4xl"
-              style={{ background: "var(--bg-surface)", border: "1px solid var(--border)" }}
+              style={{
+                background: "var(--bg-surface)",
+                border: "1px solid var(--border)",
+              }}
             >
               ⚡
             </div>
-            <h2 className="font-bold text-xl mb-2" style={{ color: "var(--text-primary)" }}>
+            <h2
+              className="font-bold text-xl mb-2"
+              style={{ color: "var(--text-primary)" }}
+            >
               {trades.length === 0 ? "Noch keine Trades" : "Keine Ergebnisse"}
             </h2>
-            <p className="text-sm max-w-xs" style={{ color: "var(--text-secondary)" }}>
+            <p
+              className="text-sm max-w-xs"
+              style={{ color: "var(--text-secondary)" }}
+            >
               {trades.length === 0
                 ? "Füge deinen ersten Trade hinzu, um loszulegen."
                 : "Versuche einen anderen Filter."}
@@ -307,7 +497,9 @@ export default function HomePage() {
         )}
       </main>
 
-      {showModal && <AddTradeModal onClose={() => setShowModal(false)} onAdd={addTrade} />}
+      {showModal && (
+        <AddTradeModal onClose={() => setShowModal(false)} onAdd={addTrade} />
+      )}
     </div>
   );
 }

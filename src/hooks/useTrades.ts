@@ -13,7 +13,16 @@ export function useTrades() {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
-        setTrades(JSON.parse(stored));
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const parsed: any[] = JSON.parse(stored);
+        // Migrate old trades that used traderName instead of ingameName
+        const migrated = parsed.map((t) => ({
+          ...t,
+          ingameName: t.ingameName ?? t.traderName ?? "",
+          tags: t.tags ?? [],
+          variant: t.variant ?? "normal",
+        }));
+        setTrades(migrated);
       }
     } catch {
       // ignore parse errors

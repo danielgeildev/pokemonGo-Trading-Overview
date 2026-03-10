@@ -5,7 +5,21 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { useTrades } from "@/hooks/useTrades";
-import { Trade, PokemonInfo } from "@/types/trade";
+import { Trade, PokemonInfo, PokemonVariant, PokemonTag } from "@/types/trade";
+
+const VARIANT_CONFIG: Record<PokemonVariant, { label: string; color: string; bg: string; border: string }> = {
+  normal:         { label: "Normal",        color: "var(--text-secondary)", bg: "var(--bg-elevated)",       border: "var(--border)" },
+  shiny:          { label: "✨ Shiny",      color: "#fbbf24",               bg: "rgba(251,191,36,0.15)",    border: "rgba(251,191,36,0.4)" },
+  female:         { label: "♀ Female",     color: "#e879f9",               bg: "rgba(232,121,249,0.15)",   border: "rgba(232,121,249,0.4)" },
+  "shiny-female": { label: "✨♀ Shiny F.", color: "#f0abfc",               bg: "rgba(240,171,252,0.15)",   border: "rgba(240,171,252,0.4)" },
+};
+
+const TAG_CONFIG: Record<PokemonTag, { label: string; color: string; bg: string; border: string }> = {
+  lucky:    { label: "⭐ Lucky",    color: "#fcd34d", bg: "rgba(252,211,77,0.15)",  border: "rgba(252,211,77,0.4)" },
+  shadow:   { label: "🌑 Shadow",  color: "#a78bfa", bg: "rgba(167,139,250,0.15)", border: "rgba(167,139,250,0.4)" },
+  purified: { label: "✦ Purified", color: "#67e8f9", bg: "rgba(103,232,249,0.15)", border: "rgba(103,232,249,0.4)" },
+  costume:  { label: "🎭 Costume", color: "#f9a8d4", bg: "rgba(249,168,212,0.15)", border: "rgba(249,168,212,0.4)" },
+};
 
 const TYPE_COLORS: Record<string, string> = {
   normal: "#A8A878",
@@ -101,6 +115,26 @@ function PokemonCard({ pokemon, label }: { pokemon: PokemonInfo; label: string }
         <p className="text-center text-xs font-mono mt-0.5" style={{ color: "var(--text-muted)" }}>
           #{String(pokemon.id).padStart(4, "0")}
         </p>
+        {pokemon.variant && pokemon.variant !== "normal" && (
+          <div className="flex justify-center mt-1.5">
+            <span className="text-xs px-2.5 py-0.5 rounded-full font-semibold"
+              style={{ background: VARIANT_CONFIG[pokemon.variant].bg, color: VARIANT_CONFIG[pokemon.variant].color, border: `1px solid ${VARIANT_CONFIG[pokemon.variant].border}` }}>
+              {VARIANT_CONFIG[pokemon.variant].label}
+            </span>
+          </div>
+        )}
+
+        {/* Tags */}
+        {(pokemon.tags ?? []).length > 0 && (
+          <div className="flex justify-center gap-1.5 mt-1.5 flex-wrap">
+            {(pokemon.tags ?? []).map((tag) => (
+              <span key={tag} className="text-xs px-2.5 py-0.5 rounded-full font-semibold"
+                style={{ background: TAG_CONFIG[tag].bg, color: TAG_CONFIG[tag].color, border: `1px solid ${TAG_CONFIG[tag].border}` }}>
+                {TAG_CONFIG[tag].label}
+              </span>
+            ))}
+          </div>
+        )}
 
         <div className="flex justify-center gap-1.5 mt-2.5">
           {pokemon.types.map((t) => (
@@ -210,15 +244,31 @@ export default function TradeDetailPage({ params }: { params: Promise<{ id: stri
                 className="w-12 h-12 rounded-2xl flex items-center justify-center text-xl font-black flex-shrink-0"
                 style={{ background: "var(--accent-glow)", color: "var(--accent)" }}
               >
-                {trade.traderName.charAt(0).toUpperCase()}
+                {trade.ingameName.charAt(0).toUpperCase()}
               </div>
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wider mb-0.5" style={{ color: "var(--text-muted)" }}>
                   Trainer
                 </p>
                 <h2 className="text-xl font-bold" style={{ color: "var(--text-primary)" }}>
-                  {trade.traderName}
+                  {trade.ingameName}
                 </h2>
+                {trade.redditName && (
+                  <a
+                    href={`https://reddit.com/user/${trade.redditName}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-xs mt-0.5 transition-colors"
+                    style={{ color: "var(--text-muted)" }}
+                    onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "#ff4500")}
+                    onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "var(--text-muted)")}
+                  >
+                    <svg className="w-3 h-3" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M10 0C4.478 0 0 4.478 0 10s4.478 10 10 10 10-4.478 10-10S15.522 0 10 0zm5.93 9.418a1.33 1.33 0 0 1 .57 1.082c0 1.55-1.804 2.8-4.026 2.8-2.223 0-4.027-1.25-4.027-2.8 0-.41.167-.8.458-1.126a.83.83 0 0 1-.338-.666.84.84 0 0 1 .84-.84c.22 0 .42.085.57.224A5.46 5.46 0 0 1 12.474 8a.3.3 0 0 1 .01-.074l1.264-1.97a.6.6 0 0 1 .83-.183.6.6 0 0 1 .183.83l-1.153 1.795a1.328 1.328 0 0 1 2.322 1.02zm-8.6.832a.84.84 0 1 0 1.68 0 .84.84 0 0 0-1.68 0zm4.79.84a.84.84 0 1 0 0-1.68.84.84 0 0 0 0 1.68zm-.88 1.47c-.362.36-.95.36-1.31 0l-.207-.206a.24.24 0 0 0-.34.34l.207.206a1.32 1.32 0 0 0 1.99 0l.207-.206a.24.24 0 1 0-.34-.34l-.207.206z"/>
+                    </svg>
+                    u/{trade.redditName}
+                  </a>
+                )}
                 <p className="text-xs mt-0.5" style={{ color: "var(--text-secondary)" }}>
                   {formatDate(trade.date)}
                 </p>
