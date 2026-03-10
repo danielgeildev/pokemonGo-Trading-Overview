@@ -8,17 +8,15 @@ import { useTrades } from "@/hooks/useTrades";
 import { Trade, PokemonInfo, PokemonVariant, PokemonTag } from "@/types/trade";
 
 const VARIANT_CONFIG: Record<PokemonVariant, { label: string; color: string; bg: string; border: string }> = {
-  normal:         { label: "Normal",        color: "var(--text-secondary)", bg: "var(--bg-elevated)",       border: "var(--border)" },
-  shiny:          { label: "✨ Shiny",      color: "#fbbf24",               bg: "rgba(251,191,36,0.15)",    border: "rgba(251,191,36,0.4)" },
-  female:         { label: "♀ Female",     color: "#e879f9",               bg: "rgba(232,121,249,0.15)",   border: "rgba(232,121,249,0.4)" },
-  "shiny-female": { label: "✨♀ Shiny F.", color: "#f0abfc",               bg: "rgba(240,171,252,0.15)",   border: "rgba(240,171,252,0.4)" },
+  normal: { label: "Normal",   color: "var(--text-secondary)", bg: "var(--bg-elevated)",    border: "var(--border)" },
+  shiny:  { label: "✨ Shiny", color: "#fbbf24",               bg: "rgba(251,191,36,0.15)", border: "rgba(251,191,36,0.4)" },
 };
 
 const TAG_CONFIG: Record<PokemonTag, { label: string; color: string; bg: string; border: string }> = {
-  lucky:    { label: "⭐ Lucky",    color: "#fcd34d", bg: "rgba(252,211,77,0.15)",  border: "rgba(252,211,77,0.4)" },
-  shadow:   { label: "🌑 Shadow",  color: "#a78bfa", bg: "rgba(167,139,250,0.15)", border: "rgba(167,139,250,0.4)" },
-  purified: { label: "✦ Purified", color: "#67e8f9", bg: "rgba(103,232,249,0.15)", border: "rgba(103,232,249,0.4)" },
-  costume:  { label: "🎭 Costume", color: "#f9a8d4", bg: "rgba(249,168,212,0.15)", border: "rgba(249,168,212,0.4)" },
+  lucky:   { label: "⭐ Lucky",    color: "#fcd34d", bg: "rgba(252,211,77,0.15)",  border: "rgba(252,211,77,0.4)" },
+  costume: { label: "🎭 Costume", color: "#f9a8d4", bg: "rgba(249,168,212,0.15)", border: "rgba(249,168,212,0.4)" },
+  dynamax:    { label: "◆ Dynamax",    color: "#c084fc", bg: "rgba(192,132,252,0.15)", border: "rgba(192,132,252,0.4)" },
+  gigantamax: { label: "◈ Gigantamax", color: "#e879f9", bg: "rgba(232,121,249,0.2)",  border: "rgba(232,121,249,0.6)" },
 };
 
 const TYPE_COLORS: Record<string, string> = {

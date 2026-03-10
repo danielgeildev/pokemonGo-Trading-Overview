@@ -16,11 +16,21 @@ export function useTrades() {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const parsed: any[] = JSON.parse(stored);
         // Migrate old trades that used traderName instead of ingameName
+        const validTags = new Set(["lucky", "costume", "dynamax", "gigantamax"]);
         const migrated = parsed.map((t) => ({
           ...t,
           ingameName: t.ingameName ?? t.traderName ?? "",
-          tags: t.tags ?? [],
-          variant: t.variant ?? "normal",
+          // Strip removed tags (shadow, purified) and keep only valid ones
+          theirPokemon: {
+            ...t.theirPokemon,
+            variant: ["normal", "shiny"].includes(t.theirPokemon?.variant) ? t.theirPokemon.variant : "normal",
+            tags: (t.theirPokemon?.tags ?? []).filter((tag: string) => validTags.has(tag)),
+          },
+          myPokemon: {
+            ...t.myPokemon,
+            variant: ["normal", "shiny"].includes(t.myPokemon?.variant) ? t.myPokemon.variant : "normal",
+            tags: (t.myPokemon?.tags ?? []).filter((tag: string) => validTags.has(tag)),
+          },
         }));
         setTrades(migrated);
       }
