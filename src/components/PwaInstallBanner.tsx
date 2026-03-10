@@ -66,7 +66,7 @@ export default function PwaInstallBanner() {
         className="w-11 h-11 rounded-xl overflow-hidden flex-shrink-0"
         style={{ background: "#1a1d27" }}
       >
-        <Image src="/icons/ditto.png" alt="Ditto" width={44} height={44} className="object-contain w-full h-full" />
+        <Image src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/132.png" alt="Ditto" width={44} height={44} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
       </div>
 
       {/* Text */}

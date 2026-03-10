@@ -7,16 +7,38 @@ import { useTrades } from "@/hooks/useTrades";
 import AddTradeModal from "@/components/AddTradeModal";
 import { Trade, PokemonVariant, PokemonTag } from "@/types/trade";
 
-const VARIANT_CONFIG: Record<PokemonVariant, { label: string; color: string; bg: string }> = {
-  normal: { label: "Normal",   color: "var(--text-secondary)", bg: "var(--bg-elevated)" },
-  shiny:  { label: "✨ Shiny", color: "#fbbf24",               bg: "rgba(251,191,36,0.15)" },
+const VARIANT_CONFIG: Record<
+  PokemonVariant,
+  { label: string; color: string; bg: string }
+> = {
+  normal: {
+    label: "Normal",
+    color: "var(--text-secondary)",
+    bg: "var(--bg-elevated)",
+  },
+  shiny: { label: "✨ Shiny", color: "#fbbf24", bg: "rgba(251,191,36,0.15)" },
 };
 
-const TAG_CONFIG: Record<PokemonTag, { label: string; color: string; bg: string }> = {
-  lucky:   { label: "⭐ Lucky",    color: "#fcd34d", bg: "rgba(252,211,77,0.15)" },
-  costume: { label: "🎭 Costume", color: "#f9a8d4", bg: "rgba(249,168,212,0.15)" },
-  dynamax:    { label: "◆ Dynamax",    color: "#c084fc", bg: "rgba(192,132,252,0.15)" },
-  gigantamax: { label: "◈ Gigantamax", color: "#e879f9", bg: "rgba(232,121,249,0.2)" },
+const TAG_CONFIG: Record<
+  PokemonTag,
+  { label: string; color: string; bg: string }
+> = {
+  lucky: { label: "⭐ Lucky", color: "#fcd34d", bg: "rgba(252,211,77,0.15)" },
+  costume: {
+    label: "🎭 Costume",
+    color: "#f9a8d4",
+    bg: "rgba(249,168,212,0.15)",
+  },
+  dynamax: {
+    label: "◆ Dynamax",
+    color: "#c084fc",
+    bg: "rgba(192,132,252,0.15)",
+  },
+  gigantamax: {
+    label: "◈ Gigantamax",
+    color: "#e879f9",
+    bg: "rgba(232,121,249,0.2)",
+  },
 };
 
 const STATUS_CONFIG = {
@@ -317,7 +339,13 @@ export default function HomePage() {
               className="w-9 h-9 rounded-xl overflow-hidden flex-shrink-0"
               style={{ background: "#1a1d27" }}
             >
-              <Image src="/icons/ditto.png" alt="Ditto" width={36} height={36} className="object-contain w-full h-full" />
+              <Image
+                src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/132.png"
+                alt="Ditto"
+                width={36}
+                height={36}
+                style={{ width: "100%", height: "100%", objectFit: "contain" }}
+              />
             </div>
             <div>
               <h1
