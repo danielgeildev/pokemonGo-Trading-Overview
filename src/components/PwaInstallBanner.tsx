@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 
+
 const DISMISSED_KEY = "pwa-install-dismissed";
 
 interface BeforeInstallPromptEvent extends Event {
@@ -61,12 +62,8 @@ export default function PwaInstallBanner() {
       }}
     >
       {/* Icon */}
-      <div
-        className="w-11 h-11 rounded-xl flex items-center justify-center font-black text-base flex-shrink-0"
-        style={{ background: "var(--accent)", color: "#fff" }}
-      >
-        TT
-      </div>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/132.svg" alt="Ditto" style={{ width: 44, height: 44, objectFit: "contain", flexShrink: 0 }} />
 
       {/* Text */}
       <div className="flex-1 min-w-0">
