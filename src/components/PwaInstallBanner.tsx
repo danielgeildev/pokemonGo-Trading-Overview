@@ -16,6 +16,7 @@ if (typeof window !== "undefined") {
   window.addEventListener("beforeinstallprompt", (e) => {
     e.preventDefault();
     globalPrompt = e as BeforeInstallPromptEvent;
+    console.log("[PWA] beforeinstallprompt fired ✓");
   });
 }
 
