@@ -346,7 +346,7 @@ export default function HomePage() {
                 className="font-bold text-base leading-tight"
                 style={{ color: "var(--text-primary)" }}
               >
-                Trade Trackerasdn
+                Trade Tracker
               </h1>
               <p className="text-xs" style={{ color: "var(--text-muted)" }}>
                 Pokémon GO
