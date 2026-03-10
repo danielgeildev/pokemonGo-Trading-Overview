@@ -43,17 +43,15 @@ const TYPE_COLORS: Record<string, string> = {
 };
 
 const VARIANT_CONFIG: Record<PokemonVariant, { label: string; color: string; bg: string; border: string }> = {
-  normal:        { label: "Normal",       color: "var(--text-secondary)", bg: "var(--bg-elevated)",       border: "var(--border)" },
-  shiny:         { label: "✨ Shiny",      color: "#fbbf24",               bg: "rgba(251,191,36,0.15)",    border: "rgba(251,191,36,0.4)" },
-  female:        { label: "♀ Female",     color: "#e879f9",               bg: "rgba(232,121,249,0.15)",   border: "rgba(232,121,249,0.4)" },
-  "shiny-female":{ label: "✨♀ Shiny F.", color: "#f0abfc",               bg: "rgba(240,171,252,0.15)",   border: "rgba(240,171,252,0.4)" },
+  normal: { label: "Normal",    color: "var(--text-secondary)", bg: "var(--bg-elevated)",    border: "var(--border)" },
+  shiny:  { label: "✨ Shiny",  color: "#fbbf24",               bg: "rgba(251,191,36,0.15)", border: "rgba(251,191,36,0.4)" },
 };
 
 const TAG_CONFIG: Record<PokemonTag, { label: string; color: string; bg: string; border: string }> = {
-  lucky:    { label: "⭐ Lucky",     color: "#fcd34d", bg: "rgba(252,211,77,0.15)",  border: "rgba(252,211,77,0.4)" },
-  shadow:   { label: "🌑 Shadow",   color: "#a78bfa", bg: "rgba(167,139,250,0.15)", border: "rgba(167,139,250,0.4)" },
-  purified: { label: "✦ Purified",  color: "#67e8f9", bg: "rgba(103,232,249,0.15)", border: "rgba(103,232,249,0.4)" },
-  costume:  { label: "🎭 Costume",  color: "#f9a8d4", bg: "rgba(249,168,212,0.15)", border: "rgba(249,168,212,0.4)" },
+  lucky:   { label: "⭐ Lucky",    color: "#fcd34d", bg: "rgba(252,211,77,0.15)",  border: "rgba(252,211,77,0.4)" },
+  costume: { label: "🎭 Costume", color: "#f9a8d4", bg: "rgba(249,168,212,0.15)", border: "rgba(249,168,212,0.4)" },
+  dynamax:    { label: "◆ Dynamax",      color: "#c084fc", bg: "rgba(192,132,252,0.15)", border: "rgba(192,132,252,0.4)" },
+  gigantamax: { label: "◈ Gigantamax",   color: "#e879f9", bg: "rgba(232,121,249,0.2)",  border: "rgba(232,121,249,0.6)" },
 };
 
 /** Convert raw API name to readable display name */
@@ -75,14 +73,6 @@ function getSpriteUrl(data: RawPokemonData, variant: PokemonVariant): string {
         || data.sprites?.front_shiny
         || data.sprites?.other?.["official-artwork"]?.front_default
         || data.sprites?.front_default || "";
-    case "female":
-      return data.sprites?.front_female
-        || data.sprites?.other?.["official-artwork"]?.front_default
-        || data.sprites?.front_default || "";
-    case "shiny-female":
-      return data.sprites?.front_shiny_female
-        || data.sprites?.front_shiny
-        || data.sprites?.other?.["official-artwork"]?.front_shiny || "";
     default:
       return data.sprites?.other?.["official-artwork"]?.front_default
         || data.sprites?.front_default || "";
@@ -134,7 +124,6 @@ function buildInfo(
     spriteUrl: getSpriteUrl(data, variant),
     types: data.types.map((t) => t.type.name),
     variant,
-    hasFemaleDiff: !!data.sprites?.front_female,
     tags,
     forms,
   };
@@ -244,20 +233,9 @@ export default function PokemonAutocomplete({ label, value, onChange }: Props) {
 
   function handleTagToggle(tag: PokemonTag) {
     if (!rawData || !value) return;
-    let tags: PokemonTag[];
-    if (value.tags.includes(tag)) {
-      // Deselect
-      tags = value.tags.filter((t) => t !== tag);
-    } else {
-      // Shadow and purified are mutually exclusive
-      if (tag === "shadow") {
-        tags = [...value.tags.filter((t) => t !== "purified"), tag];
-      } else if (tag === "purified") {
-        tags = [...value.tags.filter((t) => t !== "shadow"), tag];
-      } else {
-        tags = [...value.tags, tag];
-      }
-    }
+    const tags = value.tags.includes(tag)
+      ? value.tags.filter((t) => t !== tag)
+      : [...value.tags, tag];
     onChange(buildInfo(rawData, value.variant, tags, value.forms ?? []));
   }
 
@@ -269,8 +247,7 @@ export default function PokemonAutocomplete({ label, value, onChange }: Props) {
       const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${form.name}`);
       const data: RawPokemonData = await res.json();
       setRawData(data);
-      const isShiny = value.variant === "shiny" || value.variant === "shiny-female";
-      const newVariant: PokemonVariant = isShiny ? "shiny" : "normal";
+      const newVariant: PokemonVariant = value.variant === "shiny" ? "shiny" : "normal";
       const forms = value.forms ?? [];
       onChange(buildInfo(data, newVariant, value.tags, forms));
       setQuery(toDisplayName(form.name));
@@ -281,11 +258,9 @@ export default function PokemonAutocomplete({ label, value, onChange }: Props) {
     }
   }
 
-  const availableVariants: PokemonVariant[] = rawData
-    ? ["normal", "shiny", ...(rawData.sprites?.front_female ? (["female", "shiny-female"] as PokemonVariant[]) : [])]
-    : [];
+  const availableVariants: PokemonVariant[] = ["normal", "shiny"];
 
-  const ALL_TAGS: PokemonTag[] = ["lucky", "shadow", "purified", "costume"];
+  const ALL_TAGS: PokemonTag[] = ["lucky", "costume", "dynamax", "gigantamax"];
 
   return (
     <div ref={wrapperRef} className="relative">
@@ -335,11 +310,7 @@ export default function PokemonAutocomplete({ label, value, onChange }: Props) {
                   );
                 })}
               </div>
-              {(value.variant === "female" || value.variant === "shiny-female") && (
-                <p className="text-xs mt-1.5" style={{ color: "var(--text-muted)" }}>
-                  Kein Official Artwork für female — Game-Sprite wird verwendet.
-                </p>
-              )}
+
             </div>
           )}
 

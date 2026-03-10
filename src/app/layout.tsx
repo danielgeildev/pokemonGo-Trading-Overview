@@ -1,6 +1,7 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import PwaInstallBanner from "@/components/PwaInstallBanner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,6 +16,16 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Trade Tracker – Pokémon GO",
   description: "Behalte den Überblick über deine Pokémon GO Trades",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Trade Tracker",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#7c6ff7",
 };
 
 export default function RootLayout({
@@ -23,11 +34,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+    <html lang="de">
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         {children}
+        <PwaInstallBanner />
       </body>
     </html>
   );
