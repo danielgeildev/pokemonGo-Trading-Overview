@@ -1,6 +1,6 @@
 # Trade Tracker – Pokémon GO
 
-Behalte den Überblick über deine Pokémon GO Trades.
+Keep track of your Pokémon GO trades.
 
 **Live:** [pokemon-go-trading-overview.vercel.app](https://pokemon-go-trading-overview.vercel.app)
 
@@ -8,12 +8,12 @@ Behalte den Überblick über deine Pokémon GO Trades.
 
 ## Features
 
-- Trades erfassen mit Pokémon, Datum, Typ und Notizen
-- Pokémon-Suche mit Autocomplete via PokéAPI
-- Unterstützung für Varianten, Formen und Tags (Shadow, Purified, Shiny, etc.)
+- Log trades with Pokémon, date, type and notes
+- Pokémon search with autocomplete via PokéAPI
+- Support for variants, forms and tags (Shadow, Purified, Shiny, etc.)
 - Dynamax & Gigantamax
-- Dark Mode UI
-- PWA – als App auf Desktop und Homescreen installierbar
+- Dark mode UI
+- PWA – installable as an app on desktop and mobile home screen
 
 ## Tech Stack
 
@@ -22,19 +22,19 @@ Behalte den Überblick über deine Pokémon GO Trades.
 - [PokéAPI](https://pokeapi.co)
 - Deployed on [Vercel](https://vercel.com)
 
-## Lokale Entwicklung
+## Local Development
 
 ```bash
 npm install
 npm run dev
 ```
 
-Öffne [http://localhost:3000](http://localhost:3000) im Browser.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## Deploy
+## Build
 
 ```bash
 npm run build
 ```
 
-Der Build stampt automatisch den Service Worker Cache Key, sodass alte Caches bei jedem Deploy invalidiert werden.
+The build automatically stamps the service worker cache key, ensuring old caches are invalidated on every deploy.
